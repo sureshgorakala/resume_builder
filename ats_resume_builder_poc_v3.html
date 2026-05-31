@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATS Resume Builder – Fresher POC</title>
+  <style>
+    :root {
+      --bg: #f4f5fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --border-soft: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #16a34a;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #e0f2fe 0, #f4f5fb 35%, #eef2ff 100%);
+      color: var(--text-main);
+    }
+    .app-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    header .logo-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+    }
+    header .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 24px 24px;
+    }
+    .layout {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+    .layout-full {
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto 24px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      padding: 20px 22px;
+      border: 1px solid var(--border-soft);
+    }
+    .card-soft {
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
+      padding: 18px 20px;
+    }
+    h1, h2, h3, h4 { margin: 0; }
+    .title-lg {
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .text-muted { color: var(--text-muted); }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 12px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-5 { margin-top: 20px; }
+    .mb-1 { margin-bottom: 4px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-4 { margin-bottom: 16px; }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 8px; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tag-secondary {
+      background: #ecfdf3;
+      color: #15803d;
+    }
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-secondary {
+      border-radius: 999px;
+      padding: 9px 16px;
+      border: 1px solid var(--border-soft);
+      background: #ffffff;
+      color: var(--text-main);
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-ghost {
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-link {
+      border: none;
+      background: none;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 0;
+      font-size: 13px;
+    }
+    .input, textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      padding: 9px 11px;
+      font-size: 13px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    textarea { min-height: 120px; }
+    .input:focus, textarea:focus {
+      outline: 2px solid #bfdbfe;
+      border-color: #2563eb;
+    }
+    .dropzone {
+      border-radius: 14px;
+      border: 1px dashed #cbd5f5;
+      background: #f9fafb;
+      padding: 18px 16px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .tabs {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      margin-bottom: 10px;
+    }
+    .tab {
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #4b5563;
+    }
+    .tab.active {
+      background: #ffffff;
+      color: #111827;
+      box-shadow: 0 2px 7px rgba(148, 163, 184, 0.45);
+      font-weight: 600;
+    }
+    .stepper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+    }
+    .step-pill {
+      border-radius: 999px;
+      padding: 4px 9px;
+      border: 1px solid #e5e7eb;
+      background: rgba(255,255,255,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #6b7280;
+    }
+    .step-pill.current {
+      border-color: #2563eb;
+      color: #1d4ed8;
+      background: #e0ecff;
+      font-weight: 600;
+    }
+    .step-pill.done {
+      border-color: #16a34a;
+      color: #166534;
+      background: #dcfce7;
+    }
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #9ca3af;
+    }
+    .step-pill.current .step-dot { background: #2563eb; }
+    .step-pill.done .step-dot { background: #16a34a; }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .score-card {
+      border-radius: 14px;
+      padding: 10px 11px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: 11px;
+    }
+    .score-label { color: #6b7280; }
+    .score-value { font-size: 18px; font-weight: 700; }
+    .score-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 10px;
+    }
+    .score-tag.good { background: #dcfce7; color: #166534; }
+    .score-tag.fair { background: #fef9c3; color: #854d0e; }
+    .score-tag.weak { background: #fee2e2; color: #b91c1c; }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+    }
+    .subcard {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 10px 11px;
+      background: #f9fafb;
+      font-size: 12px;
+    }
+    .subcard-header {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .delta-chip {
+      border-radius: 999px;
+      padding: 2px 8px;
+      background: #ecfdf3;
+      color: #15803d;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .pill {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .resume-preview {
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      padding: 18px 18px;
+      max-height: 520px;
+      overflow: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .resume-preview h3 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-top: 14px;
+      margin-bottom: 4px;
+    }
+    .resume-preview ul {
+      padding-left: 18px;
+      margin: 4px 0 8px;
+    }
+    .resume-preview li { margin-bottom: 2px; }
+
+    .footer-bar {
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      background: linear-gradient(to right, rgba(248, 250, 252, 0.96), rgba(239, 246, 255, 0.96));
+      padding: 10px 24px;
+      position: sticky;
+      bottom: 0;
+    }
+    .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 640px) {
+      header { padding: 12px 16px; }
+      main { padding: 0 12px 16px; }
+      .card, .card-soft { padding: 16px 14px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header>
+    <div class="logo">
+      <div class="logo-mark">R</div>
+      <div>
+        <div>ATS Resume Builder</div>
+        <div class="subtitle">POC • Software / IT College Freshers</div>
+      </div>
+    </div>
+    <div class="stepper" id="stepper"></div>
+  </header>
+  <main>
+    <div id="view-container"></div>
+  </main>
+  <div class="footer-bar">
+    <div class="footer-inner">
+      <div id="footer-status">Step 1 of 14 • Landing</div>
+      <div class="flex gap-2">
+        <button class="btn-secondary" id="backBtn">Back</button>
+        <button class="btn-primary" id="nextBtn">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const state = {
+  stepIndex: 0,
+  steps: [
+    'Landing','Resume','Role','JD','Analysis',
+    'Summary','Skills','Projects','Education','Internship','Certifications','ATS Summary','Preview','Talking Points'
+  ],
+  atsBefore: {
+    keyword: 42,
+    skills: 40,
+    projects: 35,
+    summary: 28,
+    readability: 70,
+    internship: 20,
+    certs: 30
+  },
+  atsAfter: {
+    keyword: 78,
+    skills: 80,
+    projects: 82,
+    summary: 78,
+    readability: 86,
+    internship: 60,
+    certs: 65
+  }
+};
+
+const container = document.getElementById('view-container');
+const backBtn = document.getElementById('backBtn');
+const nextBtn = document.getElementById('nextBtn');
+const footerStatus = document.getElementById('footer-status');
+const stepperEl = document.getElementById('stepper');
+
+function scoreTag(score) {
+  let cls = 'weak', label = 'Weak';
+  if (score >= 75) { cls = 'good'; label = 'Strong'; }
+  else if (score >= 50) { cls = 'fair'; label = 'Fair'; }
+  return `<span class="score-tag ${cls}">${label}</span>`;
+}
+
+function renderStepper() {
+  stepperEl.innerHTML = state.steps.map((label, idx) => {
+    let cls = 'step-pill';
+    if (idx < state.stepIndex) cls += ' done';
+    else if (idx === state.stepIndex) cls += ' current';
+    return `<div class="${cls}"><span class="step-dot"></span>${label}</div>`;
+  }).join('');
+}
+
+function renderLanding() {
+  return `
+    <div class="layout-full">
+      <div class="card-soft">
+        <span class="tag">Proof of Concept</span>
+        <h1 class="title-lg">Build an ATS-friendly fresher resume in minutes.</h1>
+        <p class="text-muted mt-2">Paste your job description, add your existing resume, and let the assistant rewrite each section for higher ATS match and recruiter clarity.</p>
+        <div class="flex gap-3 mt-4">
+          <div class="subcard" style="flex:1;">
+            <div class="subcard-header">JD-aligned content</div>
+            <p class="text-muted">Match your skills and projects to the target software/IT fresher role.</p>
+          </div>
+          <div class="subcard" style="flex:1;">
+            <div class="subcard-header">Component ATS score</div>
+            <p class="text-muted">See Keyword, Skills, Projects, and other scores before and after changes.</p>
+          </div>
+          <div class="subcard" style="flex:1;">
+            <div class="subcard-header">DOCX export</div>
+            <p class="text-muted">Download a clean ATS-compatible resume in one fixed template.</p>
+          </div>
+        </div>
+        <div class="mt-4 flex gap-3 items-center">
+          <button class="btn-primary" onclick="goNext()">Start Building Resume ▸</button>
+          <button class="btn-ghost" onclick="goTo(5)">View Review Steps</button>
+        </div>
+        <p class="text-muted mt-3" style="font-size:11px;">Note: This is a static POC with sample data. In production, scores and suggestions will be generated dynamically from your resume and job description.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderResumeInput() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 1 • Resume</span>
+        <h2 class="title-lg">Add your current resume</h2>
+        <p class="text-muted mt-2">Upload a DOCX/PDF file or paste your resume text. We will normalize it into a fresher-friendly structure.</p>
+        <div class="mt-4">
+          <div class="tabs">
+            <button class="tab active">Upload file</button>
+            <button class="tab">Paste text</button>
+          </div>
+          <div class="dropzone mt-2">
+            <div class="mb-1"><strong>Drop your resume here</strong> or click to browse</div>
+            <div class="text-muted">DOCX or PDF • Up to 2 MB</div>
+          </div>
+          <div class="mt-3 text-muted" style="font-size:12px;">Or use this sample fresher resume and edit it later:</div>
+          <textarea class="mt-2">
+ADITYA REDDY
+Hyderabad, Telangana | +91-90000 00000 | aditya.reddy@email.com | github.com/adityareddy | linkedin.com/in/adityareddy
+
+SUMMARY
+Motivated B.Tech Computer Science fresher looking for an opportunity in software development. 
+Good knowledge of programming languages and interested to learn new technologies and contribute to the organization.
+
+SKILLS
+C, Java, HTML, CSS, JavaScript, SQL, MS Office, Teamwork, Communication
+
+EDUCATION
+B.Tech in Computer Science and Engineering, ABC Institute of Technology, Hyderabad
+Expected Graduation: 2026
+CGPA: 8.1 / 10
+
+PROJECTS
+Online Course Website
+- Created a website where users can browse and enroll for courses.
+- Used HTML, CSS and some JavaScript for the front end.
+
+Library Management System
+- Developed a small application to manage books and students.
+- Used Java and MySQL.
+
+INTERNSHIPS
+Summer Intern – XYZ Tech Solutions, Hyderabad (May 2025 – July 2025)
+- Worked on various tasks related to development and testing.
+
+CERTIFICATIONS
+- Java Programming – Coursera
+- SQL for Data Analysis – Udemy
+          </textarea>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">What we will detect</div>
+        <ul class="mt-2" style="padding-left:18px; font-size:12px; color:var(--text-muted);">
+          <li>Summary, Skills, Education, Projects, Internships, Certifications.</li>
+          <li>Missing sections for a typical software/IT fresher resume.</li>
+          <li>Formatting issues that may confuse ATS.</li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+function renderRoleInput() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 2 • Target Role</span>
+        <h2 class="title-lg">What role are you applying for?</h2>
+        <p class="text-muted mt-2">This helps us prioritize the right skills, projects, and keywords for your resume.</p>
+        <div class="mt-3">
+          <label class="mb-2" style="display:block; font-size:12px; color:var(--text-muted);">Target role</label>
+          <input class="input" value="Software Engineer Fresher" />
+        </div>
+        <div class="mt-3 text-muted" style="font-size:12px;">Popular fresher roles:</div>
+        <div class="pill-list mt-1">
+          <span class="pill">Software Engineer Fresher</span>
+          <span class="pill">Frontend Developer Fresher</span>
+          <span class="pill">Backend Developer Fresher</span>
+          <span class="pill">Data Analyst Fresher</span>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">Tip</div>
+        <p class="text-muted" style="font-size:12px;">Use the exact title from the job description when possible. That makes your summary and skills look directly aligned.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderJDInput() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 3 • Job Description</span>
+        <h2 class="title-lg">Paste the job description</h2>
+        <p class="text-muted mt-2">We will extract skills, tools, and keywords to tailor your resume for this specific opportunity.</p>
+        <textarea class="mt-3">
+Job Title: Software Engineer – Fresher (JavaScript / Full Stack)
+
+Location: Hyderabad
+
+Job Description:
+We are looking for a highly motivated Software Engineer Fresher to join our product development team. 
+You will work with senior engineers to design, develop, test and maintain web applications.
+
+Responsibilities:
+- Collaborate with developers to build and enhance web applications using JavaScript, React and Node.js.
+- Implement REST APIs and integrate with databases (MySQL / PostgreSQL).
+- Write clean, maintainable, and well-documented code.
+- Fix bugs, perform unit testing and support code reviews.
+- Work in an Agile environment and participate in daily stand-ups and sprint planning.
+
+Required Skills:
+- Strong knowledge of at least one programming language (Java, JavaScript, or C++).
+- Good understanding of data structures and algorithms.
+- Basic experience with web technologies: HTML, CSS, JavaScript.
+- Knowledge of relational databases and SQL.
+- Familiarity with Git or other version control systems.
+
+Preferred Skills:
+- Experience with React and Node.js from academic or personal projects.
+- Exposure to REST APIs, JSON and HTTP.
+- Basic understanding of cloud platforms (AWS / Azure) is a plus.
+- Good communication and problem-solving skills.
+
+Education:
+- B.Tech / B.E in Computer Science, IT or related field (2024/2025/2026 pass-out).
+        </textarea>
+        <p class="text-muted mt-2" style="font-size:11px;">You can keep this sample JD for demo or replace it with a real job post.</p>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">What we look for</div>
+        <ul class="mt-2" style="padding-left:18px; font-size:12px; color:var(--text-muted);">
+          <li>Required and preferred skills.</li>
+          <li>Technologies and tools mentioned.</li>
+          <li>Responsibilities that your projects can map to.</li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+function renderAnalysis() {
+  const a = state.atsBefore;
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 4 • Analysis</span>
+        <h2 class="title-lg">Initial ATS & recruiter review</h2>
+        <p class="text-muted mt-2">Here is how your current resume compares to the job description before any improvements.</p>
+        <div class="mt-4">
+          <h4 class="mb-2" style="font-size:13px;">Top issues detected</h4>
+          <ul style="padding-left:18px; font-size:12px; color:var(--text-muted);">
+            <li>Summary does not mention “Software Engineer Fresher” or core technologies like React and Node.js.</li>
+            <li>Skills section misses several JD keywords such as Git, REST APIs, and React.</li>
+            <li>Projects are described generically without outcomes, metrics, or clear tech stack.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="flex items-center justify-between mb-2">
+          <div class="subcard-header">ATS component scores (before)</div>
+        </div>
+        <div class="score-grid">
+          <div class="score-card">
+            <div class="score-label">Keyword Match</div>
+            <div class="score-value">${a.keyword}</div>
+            ${scoreTag(a.keyword)}
+          </div>
+          <div class="score-card">
+            <div class="score-label">Skills Relevance</div>
+            <div class="score-value">${a.skills}</div>
+            ${scoreTag(a.skills)}
+          </div>
+          <div class="score-card">
+            <div class="score-label">Project Strength</div>
+            <div class="score-value">${a.projects}</div>
+            ${scoreTag(a.projects)}
+          </div>
+          <div class="score-card">
+            <div class="score-label">Summary Quality</div>
+            <div class="score-value">${a.summary}</div>
+            ${scoreTag(a.summary)}
+          </div>
+          <div class="score-card">
+            <div class="score-label">ATS Readability</div>
+            <div class="score-value">${a.readability}</div>
+            ${scoreTag(a.readability)}
+          </div>
+          <div class="score-card">
+            <div class="score-label">Internship Quality</div>
+            <div class="score-value">${a.internship}</div>
+            ${scoreTag(a.internship)}
+          </div>
+          <div class="score-card">
+            <div class="score-label">Certification Fit</div>
+            <div class="score-value">${a.certs}</div>
+            ${scoreTag(a.certs)}
+          </div>
+        </div>
+        <p class="text-muted mt-3" style="font-size:11px;">Sample scores for demo purposes. In production, these would be computed dynamically by the ATS scoring engine.</p>
+        <div class="mt-3">
+          <button class="btn-primary" onclick="goTo(5)">Start Section Review ▸</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSummaryReview() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 5 • Summary</span>
+        <h2 class="title-lg">Rewrite your summary</h2>
+        <p class="text-muted mt-2">Make your value proposition clear in 3–4 lines, aligned to the target fresher role.</p>
+        <div class="two-column mt-4">
+          <div class="subcard">
+            <div class="subcard-header">Current summary</div>
+            <p class="text-muted">Motivated B.Tech Computer Science fresher looking for an opportunity in software development. Good knowledge of programming languages and interested to learn new technologies and contribute to the organization.</p>
+          </div>
+          <div class="subcard">
+            <div class="subcard-header">Suggested summary</div>
+            <p>Software engineering graduate (B.Tech CSE, 2026) with hands-on projects in full-stack web development using React, Node.js, and SQL. Strong foundations in data structures and algorithms, with experience building REST APIs, authentication, and responsive UIs. Eager to contribute as a Software Engineer Fresher in an agile product team.</p>
+            <div class="mt-2">
+              <button class="btn-link">Edit manually</button>
+              <button class="btn-link">Regenerate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">ATS impact</div>
+        <p class="text-muted" style="font-size:12px;">Adding the exact role title and core technologies increases Keyword Match and Summary Quality.</p>
+        <div class="mt-3">
+          <span class="delta-chip">+50 Summary Quality (demo)</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSkillsReview() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 6 • Skills</span>
+        <h2 class="title-lg">Refine your skills for the JD</h2>
+        <p class="text-muted mt-2">Group and prioritize the skills that match the job description.</p>
+        <div class="two-column mt-4">
+          <div class="subcard">
+            <div class="subcard-header">Current skills</div>
+            <p class="text-muted">C, Java, HTML, CSS, JavaScript, SQL, MS Office, Teamwork, Communication.</p>
+          </div>
+          <div class="subcard">
+            <div class="subcard-header">Recommended skills layout</div>
+            <p><strong>Languages:</strong> Java, JavaScript, C<br/>
+               <strong>Web:</strong> HTML, CSS, React<br/>
+               <strong>Backend & DB:</strong> Node.js, REST APIs, SQL<br/>
+               <strong>Tools:</strong> Git, VS Code<br/>
+               <strong>Other:</strong> Problem solving, Communication</p>
+            <p class="text-muted" style="font-size:11px;">Newly added from JD: React, REST APIs, Node.js, Git.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">JD keywords</div>
+        <p class="text-muted" style="font-size:12px;">We pulled these directly from the job description:</p>
+        <div class="pill-list">
+          <span class="pill">React</span>
+          <span class="pill">REST APIs</span>
+          <span class="pill">Node.js</span>
+          <span class="pill">Git</span>
+          <span class="pill">SQL</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderProjectsReview() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag tag-secondary">Step 7 • Projects</span>
+        <h2 class="title-lg">Strengthen your projects</h2>
+        <p class="text-muted mt-2">Projects are your strongest signal as a fresher. Make them specific, outcome-focused, and tech-rich.</p>
+
+        <div class="subcard mt-3">
+          <div class="subcard-header">Project: Online Course Website</div>
+          <div class="two-column mt-2">
+            <div>
+              <div class="subcard-header" style="font-size:11px;">Current description</div>
+              <ul style="padding-left:18px; font-size:12px; color:var(--text-muted);">
+                <li>Created a website where users can browse and enroll for courses.</li>
+                <li>Used HTML, CSS and some JavaScript.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="subcard-header" style="font-size:11px;">Suggested bullets</div>
+              <ul style="padding-left:18px; font-size:12px;">
+                <li>Built an online course platform using React, Node.js, and PostgreSQL for user signup, course browsing, and enrollment.</li>
+                <li>Implemented responsive UI, client-side routing, and authentication using JSON Web Tokens.</li>
+                <li>Integrated REST APIs for course listing and search, handling over 1,000 test users during load testing.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="subcard mt-3">
+          <div class="subcard-header">Project: Library Management System</div>
+          <div class="two-column mt-2">
+            <div>
+              <div class="subcard-header" style="font-size:11px;">Current description</div>
+              <ul style="padding-left:18px; font-size:12px; color:var(--text-muted);">
+                <li>Developed a small application to manage books and students.</li>
+                <li>Used Java and MySQL.</li>
+              </ul>
+            </div>
+            <div>
+              <div class="subcard-header" style="font-size:11px;">Suggested bullets</div>
+              <ul style="padding-left:18px; font-size:12px;">
+                <li>Developed a Java and MySQL-based library management system to track books, students, and issuing history.</li>
+                <li>Designed normalized database schema and JDBC-based CRUD operations for books and users.</li>
+                <li>Implemented search, overdue tracking, and simple reporting for issued/returned books.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <button class="btn-link">Add another project</button>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">Why this matters</div>
+        <p class="text-muted" style="font-size:12px;">Clear technologies, responsibilities, and impact make it easier for ATS and recruiters to map your projects to real work.</p>
+        <div class="mt-3"><span class="delta-chip">+47 Project Strength (demo)</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEducationReview() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 8 • Education</span>
+        <h2 class="title-lg">Check your education details</h2>
+        <p class="text-muted mt-2">Keep this section concise and complete.</p>
+        <div class="mt-3">
+          <label style="font-size:12px;" class="mb-1">Degree</label>
+          <input class="input" value="B.Tech in Computer Science and Engineering" />
+        </div>
+        <div class="two-column mt-2">
+          <div>
+            <label style="font-size:12px;" class="mb-1">College</label>
+            <input class="input" value="ABC Institute of Technology, Hyderabad" />
+          </div>
+          <div>
+            <label style="font-size:12px;" class="mb-1">Graduation year</label>
+            <input class="input" value="2026" />
+          </div>
+        </div>
+        <div class="mt-2">
+          <label style="font-size:12px;" class="mb-1">CGPA / Percentage (optional)</label>
+          <input class="input" value="8.1 / 10" />
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">Formatting tip</div>
+        <p class="text-muted" style="font-size:12px;">Keep only your most recent degree here. Move older details (like intermediate or 10th) out unless required by the job.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderInternshipReview() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 9 • Internship</span>
+        <h2 class="title-lg">Refine your internship (if any)</h2>
+        <p class="text-muted mt-2">Highlight relevant technologies and contributions.</p>
+        <div class="subcard mt-3">
+          <div class="subcard-header">Summer Intern – XYZ Tech Solutions, Hyderabad</div>
+          <div class="two-column mt-2">
+            <div>
+              <div class="subcard-header" style="font-size:11px;">Current description</div>
+              <p class="text-muted" style="font-size:12px;">Worked on various tasks related to development and testing.</p>
+            </div>
+            <div>
+              <div class="subcard-header" style="font-size:11px;">Suggested description</div>
+              <p style="font-size:12px;">Assisted in building and testing internal web tools using React and Node.js, fixed UI bugs, and wrote unit tests that increased coverage from 40% to 65% for one service.</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 text-muted" style="font-size:12px;">If you do not have an internship, you can skip this step. Projects and skills will carry more weight.</div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">No internship?</div>
+        <p class="text-muted" style="font-size:12px;">That is okay. Many freshers get hired based on strong projects and skills alone.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderCertsReview() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 10 • Certifications</span>
+        <h2 class="title-lg">Select the most relevant certifications</h2>
+        <p class="text-muted mt-2">Keep only the certifications that support the target fresher role.</p>
+        <div class="subcard mt-3">
+          <div class="subcard-header">Current certifications</div>
+          <ul style="padding-left:18px; font-size:12px; color:var(--text-muted);">
+            <li>Java Programming – Coursera</li>
+            <li>SQL for Data Analysis – Udemy</li>
+            <li>Cloud Fundamentals – Azure</li>
+          </ul>
+        </div>
+        <div class="subcard mt-3">
+          <div class="subcard-header">Recommended order</div>
+          <ul style="padding-left:18px; font-size:12px;">
+            <li>Java Programming – Coursera</li>
+            <li>SQL for Data Analysis – Udemy</li>
+            <li>Cloud Fundamentals – Azure</li>
+          </ul>
+          <button class="btn-link">Add certification</button>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">Role fit</div>
+        <p class="text-muted" style="font-size:12px;">Prioritize certifications that showcase core languages, databases, or cloud platforms listed in the JD.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderScoreSummary() {
+  const b = state.atsBefore;
+  const a = state.atsAfter;
+  function delta(before, after) { return after - before; }
+  return `
+    <div class="layout-full">
+      <div class="card">
+        <span class="tag">Step 11 • ATS Summary</span>
+        <h2 class="title-lg">Your ATS score improvements</h2>
+        <p class="text-muted mt-2">After applying the section-by-section changes, here is how your resume improved.</p>
+        <div class="score-grid mt-3">
+          <div class="score-card">
+            <div class="score-label">Keyword Match</div>
+            <div class="score-value">${b.keyword} → ${a.keyword}</div>
+            <span class="delta-chip">+${delta(b.keyword,a.keyword)}</span>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Skills Relevance</div>
+            <div class="score-value">${b.skills} → ${a.skills}</div>
+            <span class="delta-chip">+${delta(b.skills,a.skills)}</span>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Project Strength</div>
+            <div class="score-value">${b.projects} → ${a.projects}</div>
+            <span class="delta-chip">+${delta(b.projects,a.projects)}</span>
+          </div>
+          <div class="score-card">
+            <div class="score-label">Summary Quality</div>
+            <div class="score-value">${b.summary} → ${a.summary}</div>
+            <span class="delta-chip">+${delta(b.summary,a.summary)}</span>
+          </div>
+          <div class="score-card">
+            <div class="score-label">ATS Readability</div>
+            <div class="score-value">${b.readability} → ${a.readability}</div>
+            <span class="delta-chip">+${delta(b.readability,a.readability)}</span>
+          </div>
+        </div>
+        <p class="text-muted mt-3" style="font-size:11px;">These scores are illustrative for the POC. The production system would compute them from parsed resume and JD content.</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderPreview() {
+  return `
+    <div class="layout">
+      <div class="card">
+        <span class="tag">Step 12 • Preview</span>
+        <h2 class="title-lg">Preview your ATS-ready resume</h2>
+        <p class="text-muted mt-2">This preview uses a single, clean template optimized for Applicant Tracking Systems.</p>
+        <div class="resume-preview mt-3">
+          <h2 style="font-size:16px; margin-bottom:4px;">ADITYA REDDY</h2>
+          <p style="font-size:11px; color:#6b7280;">Hyderabad, Telangana | +91-90000 00000 | aditya.reddy@email.com | github.com/adityareddy | linkedin.com/in/adityareddy</p>
+
+          <h3>Summary</h3>
+          <p>Software engineering graduate (B.Tech CSE, 2026) with hands-on projects in full-stack web development using React, Node.js, and SQL. Strong foundations in data structures and algorithms, eager to contribute as a Software Engineer Fresher in an agile product team.</p>
+
+          <h3>Skills</h3>
+          <p><strong>Languages:</strong> Java, JavaScript, C<br/>
+             <strong>Web:</strong> HTML, CSS, React<br/>
+             <strong>Backend & DB:</strong> Node.js, REST APIs, SQL<br/>
+             <strong>Tools:</strong> Git, VS Code<br/>
+             <strong>Other:</strong> Problem solving, Communication</p>
+
+          <h3>Education</h3>
+          <p><strong>B.Tech in Computer Science and Engineering</strong> – ABC Institute of Technology, Hyderabad, 2026<br/>
+             CGPA: 8.1 / 10</p>
+
+          <h3>Projects</h3>
+          <ul>
+            <li><strong>Online Course Platform</strong> – React, Node.js, PostgreSQL: Built authentication, course browsing and enrollment, and responsive UI; integrated REST APIs and handled 1,000+ test users during load testing.</li>
+            <li><strong>Library Management System</strong> – Java, MySQL: Implemented book and student management, JDBC-based CRUD operations, and search with overdue tracking.</li>
+          </ul>
+
+          <h3>Internships</h3>
+          <ul>
+            <li><strong>Summer Intern – XYZ Tech Solutions</strong>: Assisted in building internal web tools using React and Node.js, fixed UI bugs, and wrote unit tests that increased coverage from 40% to 65% for one service.</li>
+          </ul>
+
+          <h3>Certifications</h3>
+          <ul>
+            <li>Java Programming – Coursera</li>
+            <li>SQL for Data Analysis – Udemy</li>
+            <li>Cloud Fundamentals – Azure</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card-soft">
+        <div class="subcard-header">Next</div>
+        <p class="text-muted" style="font-size:12px;">Generate interview talking points from this final resume and export as DOCX.</p>
+        <div class="mt-3 flex gap-2">
+          <button class="btn-primary" onclick="goNext()">Continue to Talking Points ▸</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTalkingPoints() {
+  return `
+    <div class="layout-full">
+      <div class="card">
+        <span class="tag">Interview Prep</span>
+        <h2 class="title-lg">Talking points from your resume</h2>
+        <p class="text-muted mt-2">Use these bullets as anchors when answering interview questions about your experience.</p>
+        <ul class="mt-3" style="padding-left:18px; font-size:13px;">
+          <li>Built and deployed a full-stack online course platform using React, Node.js, and PostgreSQL, handling 1,000+ test users.</li>
+          <li>Implemented REST APIs and authentication flows, improving performance and reliability compared to the initial prototype.</li>
+          <li>Contributed to an internal tools project during internship by fixing UI bugs and increasing unit test coverage from 40% to 65%.</li>
+          <li>Applied data structures and algorithms to optimize features in academic projects and coding practice.</li>
+          <li>Completed certifications in Java, SQL, and cloud fundamentals aligned with the Software Engineer Fresher role.</li>
+        </ul>
+        <div class="mt-3 flex gap-2">
+          <button class="btn-secondary">Copy talking points</button>
+          <button class="btn-primary">Export DOCX</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function render() {
+  renderStepper();
+  let viewHTML = '';
+  switch (state.stepIndex) {
+    case 0: viewHTML = renderLanding(); break;
+    case 1: viewHTML = renderResumeInput(); break;
+    case 2: viewHTML = renderRoleInput(); break;
+    case 3: viewHTML = renderJDInput(); break;
+    case 4: viewHTML = renderAnalysis(); break;
+    case 5: viewHTML = renderSummaryReview(); break;
+    case 6: viewHTML = renderSkillsReview(); break;
+    case 7: viewHTML = renderProjectsReview(); break;
+    case 8: viewHTML = renderEducationReview(); break;
+    case 9: viewHTML = renderInternshipReview(); break;
+    case 10: viewHTML = renderCertsReview(); break;
+    case 11: viewHTML = renderScoreSummary(); break;
+    case 12: viewHTML = renderPreview(); break;
+    case 13: viewHTML = renderTalkingPoints(); break;
+    default: viewHTML = renderLanding();
+  }
+  container.innerHTML = viewHTML;
+  const stepLabel = state.steps[state.stepIndex] || 'Landing';
+  footerStatus.textContent = `Step ${Math.min(state.stepIndex+1, state.steps.length)} of ${state.steps.length} • ${stepLabel}`;
+  backBtn.disabled = state.stepIndex === 0;
+  nextBtn.style.display = (state.stepIndex >= state.steps.length - 1) ? 'none' : 'inline-flex';
+}
+
+function goNext() {
+  if (state.stepIndex < state.steps.length - 1) {
+    state.stepIndex++;
+    render();
+  }
+}
+function goBack() {
+  if (state.stepIndex > 0) {
+    state.stepIndex--;
+    render();
+  }
+}
+function goTo(idx) {
+  state.stepIndex = Math.max(0, Math.min(idx, state.steps.length - 1));
+  render();
+}
+
+backBtn.addEventListener('click', goBack);
+nextBtn.addEventListener('click', goNext);
+
+render();
+</script>
+</body>
+</html>
